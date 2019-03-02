@@ -6,13 +6,27 @@
 //  Copyright © 2019 Dan. All rights reserved.
 //
 
+struct Constants {
+    struct Identifiers {
+        static let homeSegueIdentifier = "loginToHome"
+        static let tweetCellIdentifier = "tweetCell"
+    }
+    struct Keys {
+        static let userLoggedInKey = "userLoggedIn"
+    }
+    struct URLs {
+        static let authUrl = "https://api.twitter.com/oauth/request_token"
+        static let homeTimelineUrl = "https://api.twitter.com/1.1/statuses/home_timeline.json"
+    }
+    
+    static let numberOfTweetsToRetrieve = 20
+
+}
+
 import UIKit
 
 class LoginViewController: UIViewController {
-    
 
-    
-    
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -20,18 +34,16 @@ class LoginViewController: UIViewController {
     }
     
     override func viewDidAppear(_ animated: Bool) {
-        
-        if UserDefaults.standard.bool(forKey: "userLoggedIn") == true {
-            self.performSegue(withIdentifier: "loginToHome", sender: self)
+        if UserDefaults.standard.bool(forKey: Constants.Keys.userLoggedInKey) == true {
+            self.performSegue(withIdentifier: Constants.Identifiers.homeSegueIdentifier, sender: self)
         }
     }
     
     // TODO: if this causes fail, might be cause I moved it
     @IBAction func onLoginButton(_ sender: Any) {
-        let authUrl = "https://api.twitter.com/oauth/request_token"
-        TwitterAPICaller.client?.login(url: authUrl, success: {
-            UserDefaults.standard.set(true, forKey: "userLoggedIn")
-            self.performSegue(withIdentifier: "loginToHome", sender: self)
+        TwitterAPICaller.client?.login(url: Constants.URLs.authUrl, success: {
+            UserDefaults.standard.set(true, forKey: Constants.Keys.userLoggedInKey)
+            self.performSegue(withIdentifier: Constants.Identifiers.homeSegueIdentifier, sender: self)
         }, failure: { (Error) in
             print("Error: could not log in")
         })

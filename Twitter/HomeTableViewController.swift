@@ -6,12 +6,12 @@
 //  Copyright © 2019 Dan. All rights reserved.
 //
 
+
 import UIKit
 
 class HomeTableViewController: UITableViewController {
     
     let homeRefreshControl = UIRefreshControl()
-    
     var tweets = [NSDictionary]()
     var numberOfTweets: Int!
     
@@ -28,15 +28,14 @@ class HomeTableViewController: UITableViewController {
     
     @IBAction func onLogout(_ sender: Any) {
         TwitterAPICaller.client?.logout()
-        
-        UserDefaults.standard.set(false, forKey: "userLoggedIn")
+        UserDefaults.standard.set(false, forKey: Constants.Keys.userLoggedInKey)
         self.dismiss(animated: true, completion: nil)
     }
     
     @objc func loadTweets() {
-        let timelineUrl = "https://api.twitter.com/1.1/statuses/home_timeline.json"
-        let params = ["count": 20]
-        TwitterAPICaller.client?.getDictionariesRequest(url: timelineUrl, parameters: params, success: { (retrievedTweets: [NSDictionary]) in
+        numberOfTweets = Constants.numberOfTweetsToRetrieve
+        let params = ["count": numberOfTweets]
+        TwitterAPICaller.client?.getDictionariesRequest(url: Constants.URLs.homeTimelineUrl, parameters: params, success: { (retrievedTweets: [NSDictionary]) in
           
             self.tweets.removeAll()
             for tweet in retrievedTweets {
@@ -46,6 +45,24 @@ class HomeTableViewController: UITableViewController {
             self.tableView.reloadData()
             self.homeRefreshControl.endRefreshing()
             
+        }, failure: { (Error) in
+            print("Error: Could not retreive tweets! \(Error)")
+        })
+    }
+    
+    // allow more tweets to be shown when reaching the bottom
+    func loadMoreTweets() {
+        numberOfTweets += 20
+        let params = ["count": numberOfTweets]
+        
+        TwitterAPICaller.client?.getDictionariesRequest(url: Constants.URLs.homeTimelineUrl, parameters: params, success: { (retrievedTweets: [NSDictionary]) in
+            
+            self.tweets.removeAll()
+            for tweet in retrievedTweets {
+                self.tweets.append(tweet)
+            }
+            
+            self.tableView.reloadData()
         }, failure: { (Error) in
             print("Error: Could not retreive tweets! \(Error)")
         })
@@ -62,9 +79,10 @@ class HomeTableViewController: UITableViewController {
         return tweets.count
     }
     
+    // populate each table
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
-        let cell = tableView.dequeueReusableCell(withIdentifier: "tweetCell", for: indexPath) as! TweetTableViewCell
+        let cell = tableView.dequeueReusableCell(withIdentifier: Constants.Identifiers.tweetCellIdentifier, for: indexPath) as! TweetTableViewCell
         
         let user = tweets[indexPath.row]["user"] as! NSDictionary
         cell.userNameLabel.text = user["name"] as? String
@@ -80,5 +98,11 @@ class HomeTableViewController: UITableViewController {
         }
         
         return cell
+    }
+    
+    override func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        if indexPath.row + 1 == tweets.count {
+            loadMoreTweets()
+        }
     }
 }
