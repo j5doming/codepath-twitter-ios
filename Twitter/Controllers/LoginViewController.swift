@@ -17,10 +17,10 @@ struct Constants {
     struct URLs {
         static let authUrl = "https://api.twitter.com/oauth/request_token"
         static let homeTimelineUrl = "https://api.twitter.com/1.1/statuses/home_timeline.json"
+        static let postTweetUrl = "https://api.twitter.com/1.1/statuses/update.json"
     }
     
     static let numberOfTweetsToRetrieve = 20
-
 }
 
 import UIKit
