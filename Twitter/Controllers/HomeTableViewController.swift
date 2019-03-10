@@ -21,8 +21,10 @@ class HomeTableViewController: UITableViewController {
         loadTweets()
         
         homeRefreshControl.addTarget(self, action: #selector(loadTweets), for: .valueChanged)
-        
         tableView.refreshControl = homeRefreshControl
+        
+        tableView.rowHeight = UITableView.automaticDimension
+        tableView.estimatedRowHeight = 150
         
     }
     
@@ -78,7 +80,7 @@ class HomeTableViewController: UITableViewController {
         // #warning Incomplete implementation, return the number of sections
         return 1
     }
-
+    
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         // #warning Incomplete implementation, return the number of rows
         return tweets.count
@@ -102,6 +104,9 @@ class HomeTableViewController: UITableViewController {
             cell.profileImageView.image = UIImage(data: imageData)
         }
         
+        cell.setFavorited(tweets[indexPath.row]["favorited"] as! Bool)
+        cell.setRetweeted(tweets[indexPath.row]["retweeted"] as! Bool)
+        cell.tweetId = tweets[indexPath.row]["id"] as! Int
         return cell
     }
     

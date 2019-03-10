@@ -18,6 +18,10 @@ struct Constants {
         static let authUrl = "https://api.twitter.com/oauth/request_token"
         static let homeTimelineUrl = "https://api.twitter.com/1.1/statuses/home_timeline.json"
         static let postTweetUrl = "https://api.twitter.com/1.1/statuses/update.json"
+        static let postFavoriteUrl = "https://api.twitter.com/1.1/favorites/create.json"
+        static let destroyFavoriteUrl = "https://api.twitter.com/1.1/favorites/destroy.json"
+        static let postRetweetUrl = "https://api.twitter.com/1.1/statuses/retweet/"
+        static let postUnretweetUrl = "https://api.twitter.com/1.1/statuses/unretweet/"
     }
     
     static let numberOfTweetsToRetrieve = 20
